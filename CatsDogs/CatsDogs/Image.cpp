@@ -1,17 +1,24 @@
+#include "stdafx.h"
 #include "Image.h"
 
 
-
-Image::Image(string fileName)
-{
-	
+Image::Image(string imageDir) {
+	image = imread(imageDir, 1);
 }
 
-Image::Image(int height, int width, int intensity)
-{
-	image = Mat(50, 200, CV_8UC1, Scalar(100));
+Image::Image() {
+	image = NULL;
 }
+
 
 Image::~Image()
 {
+}
+
+Mat Image::getImage() {
+	return image;
+}
+
+void Image::setImage(Mat image) {
+	this->image = image;
 }
