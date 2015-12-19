@@ -6,7 +6,8 @@ Training::Training(int filesNum, double area){
 	this->filesNum = filesNum;
 	this->line = 0;
 	trainingDataMat = Mat(filesNum, area, CV_32FC1);
-	labels = Mat(filesNum, 1, CV_32FC1);
+
+	labels = Mat(filesNum, 0, CV_32SC1);
 }
 
 Training::~Training()
@@ -16,11 +17,15 @@ Training::~Training()
 void Training::initLabels() {
 	for (int i = 0; i < filesNum; i++) {
 		if (filesNum/2<=i) {
-			labels.at<float>(i, 1) = 1;
+			labels.push_back(1);
 		}else {
-			labels.at<float>(i, 1) = -1;
+			labels.push_back(0);
 		}
 	}
+
+	for (int i = 0; i<labels.rows; i++)
+		for (int j = 0; j<labels.cols; j++)
+			printf("labels(%d, %d) = %d \n", i, j, labels.at<int>(i, j));
 }
 
 void Training::supportVectorMachine(Mat catDog) {
@@ -33,7 +38,7 @@ void Training::supportVectorMachine(Mat catDog) {
 }
 
 void Training::svmTrain() {
-	// Set up SVM's parameters
+
 	svm = SVM::create();
 	svm->setType(SVM::C_SVC);
 	svm->setKernel(SVM::LINEAR);
