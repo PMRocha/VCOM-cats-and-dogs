@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Training.h"
 #include "Image.h"
+#include <opencv2/xfeatures2d.hpp>
 
 
 Training::Training(int filesNum, double area){
@@ -15,21 +16,17 @@ Training::~Training()
 {
 }
 
-void Training::initLabels() {
+void Training::svmInitLabels() {
 	for (int i = 0; i < filesNum; i++) {
-		if (filesNum/2<=i) {
+		if (i<=filesNum/2) {
 			labels.push_back(1);
 		}else {
-			labels.push_back(0);
+			labels.push_back(-1);
 		}
 	}
-
-	for (int i = 0; i<labels.rows; i++)
-		for (int j = 0; j<labels.cols; j++)
-			printf("labels(%d, %d) = %d \n", i, j, labels.at<int>(i, j));
 }
 
-void Training::supportVectorMachine(Mat catDog) {
+void Training::setTrainingDataMat(Mat catDog) {
 	int ii = 0;
 	for (int i = 0; i</*catDog.rows*/14; i++) {
 		for (int j = 0; j < /*catDog.cols*/14; j++) {
@@ -41,7 +38,6 @@ void Training::supportVectorMachine(Mat catDog) {
 }
 
 void Training::svmTrain() {
-
 	svm = SVM::create();
 	svm->setType(SVM::C_SVC);
 	svm->setKernel(SVM::POLY);
@@ -50,13 +46,29 @@ void Training::svmTrain() {
 	svm->setTermCriteria(term_crit);
 
 	// Train the SVM
-	printf("2");
 	svm->train(trainingDataMat, ROW_SAMPLE, labels);
-	printf("3");
-	
-	/*Mat res;   // output
-	Image cat = Image("train/cat.0.jpg");
-	svm->predict(cat.getImage(), res);
-	imshow("output", res);
-	waitKey(0);*/
+}
+
+void Training::svmTest(Mat desc) {
+
+	//just testing
+	Mat descInLine = Mat(1, 196, CV_32FC1);
+	int ii = 0;
+	for (int i = 0; i < 14; i++) {
+		for (int j = 0; j < 14; j++) {
+			descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+			ii++;
+		}
+	}
+
+	float res = svm->predict(descInLine);
+	printf("res = %f\n", res);
+}
+
+void Training::svmSave(string fileName) {
+	svm->save(fileName);
+}
+
+void Training::svmLoad(string fileName) {
+	svm = StatModel::load<SVM>(fileName);
 }

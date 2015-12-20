@@ -24,8 +24,11 @@ public:
 	~Training();
 
 	//SUPPORT VECTOR MACHINE
-	void initLabels();
-	void supportVectorMachine(Mat catDog);
+	void svmInitLabels();
+	void setTrainingDataMat(Mat catDog);
 	void svmTrain();
+	void svmTest(Mat desc);
+	void svmSave(string fileName = "svm_train.yml");
+	void svmLoad(string fileName = "svm_train.yml");
 };
 

@@ -31,32 +31,43 @@ void getBiggerArea(int line, int cols, int &biggerArea) {
 
 int main(){
 	//identify dogs
-	vector<Mat> descriptors;
+	vector<Mat> train_descriptors;
+	vector<Mat> test_descriptors;
 
 	//positive images - dogs
-	for (int i = 0; i < 10; i++) {
-		//Image dog = Image("../x64/Release/train/dog."+to_string(i)+".jpg");
-		Image dog = Image("train/dog." + to_string(i) + ".jpg");
+	for (int i = 0; i < 20; i++) {
+		Image dog = Image("../x64/Release/train/dog."+to_string(i)+".jpg");
+		//Image dog = Image("train/dog." + to_string(i) + ".jpg");
 		Mat desc;
 		detectionSIFT(dog.getImage(), desc);
-		descriptors.push_back(desc);
+		train_descriptors.push_back(desc);
 	}
 	
 	//negative images - cats
-	for (int i = 0; i < 10; i++) {
-		//Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg");
-		Image cat = Image("train/cat." + to_string(i) + ".jpg");
+	for (int i = 0; i < 20; i++) {
+		Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg");
+		//Image cat = Image("train/cat." + to_string(i) + ".jpg");
 		Mat desc;
 		detectionSIFT(cat.getImage(), desc);
-		descriptors.push_back(desc);
+		train_descriptors.push_back(desc);
 	}
 
-	Training train(20, 196);
-	train.initLabels();
-	for (int i = 0; i < descriptors.size(); i++) {
-		train.supportVectorMachine(descriptors[i]);
+	Training train(40, 196);
+	train.svmInitLabels();
+	for (int i = 0; i < train_descriptors.size(); i++) {
+		train.setTrainingDataMat(train_descriptors[i]);
 	}
 	train.svmTrain();
+	train.svmSave();
+	for (int i = 1; i < 50; i++) {
+		Image catOrDog = Image("../x64/Release/test1/" + to_string(i) + ".jpg");
+		//Image cat = Image("test1/" + to_string(i) + ".jpg");
+		Mat desc;
+		detectionSIFT(catOrDog.getImage(), desc);
+		train.svmTest(desc);
+		imshow("catOrDog", catOrDog.getImage());
+		waitKey(0);
+	}
 
     return 0;
 }
