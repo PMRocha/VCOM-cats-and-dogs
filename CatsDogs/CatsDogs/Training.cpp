@@ -16,7 +16,7 @@ Training::~Training()
 {
 }
 
-void Training::svmInitLabels() {
+void Training::initLabels() {
 	for (int i = 0; i < filesNum; i++) {
 		if (i<=filesNum/2) {
 			labels.push_back(1);

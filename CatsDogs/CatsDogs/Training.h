@@ -23,9 +23,9 @@ private:
 public:
 	Training(int filesNum, double area);
 	~Training();
+	void initLabels();
 
 	//SUPPORT VECTOR MACHINE
-	void svmInitLabels();
 	void setTrainingDataMat(Mat catDog);
 	void svmTrain();
 	float svmTest(Mat desc);
