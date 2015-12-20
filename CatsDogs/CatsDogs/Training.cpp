@@ -21,7 +21,7 @@ void Training::svmInitLabels() {
 		if (i<=filesNum/2) {
 			labels.push_back(1);
 		}else {
-			labels.push_back(-1);
+			labels.push_back(0);
 		}
 	}
 }
@@ -49,7 +49,7 @@ void Training::svmTrain() {
 	svm->train(trainingDataMat, ROW_SAMPLE, labels);
 }
 
-void Training::svmTest(Mat desc) {
+float Training::svmTest(Mat desc) {
 
 	//just testing
 	Mat descInLine = Mat(1, 196, CV_32FC1);
@@ -61,8 +61,7 @@ void Training::svmTest(Mat desc) {
 		}
 	}
 
-	float res = svm->predict(descInLine);
-	printf("res = %f\n", res);
+	return svm->predict(descInLine);
 }
 
 void Training::svmSave(string fileName) {

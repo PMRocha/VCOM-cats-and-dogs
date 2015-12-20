@@ -27,7 +27,7 @@ public:
 	void svmInitLabels();
 	void setTrainingDataMat(Mat catDog);
 	void svmTrain();
-	void svmTest(Mat desc);
+	float svmTest(Mat desc);
 	void svmSave(string fileName = "svm_train.yml");
 	void svmLoad(string fileName = "svm_train.yml");
 };
