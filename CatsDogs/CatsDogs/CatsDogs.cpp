@@ -18,7 +18,7 @@ void detectionSIFT(Mat img, Mat &desc) {
 	detector->detect(img, img_keypoints);
 
 	//calculate descriptors (feature vectors)
-	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create();
+	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(196);
 	extractor->compute(img, img_keypoints, desc);
 }
 
@@ -31,28 +31,27 @@ void getBiggerArea(int line, int cols, int &biggerArea) {
 
 int main(){
 	//identify dogs
-	int biggerArea = 0;
 	vector<Mat> descriptors;
 
 	//positive images - dogs
 	for (int i = 0; i < 10; i++) {
-		Image dog = Image("../x64/Release/train/dog."+to_string(i)+".jpg");
+		//Image dog = Image("../x64/Release/train/dog."+to_string(i)+".jpg");
+		Image dog = Image("train/dog." + to_string(i) + ".jpg");
 		Mat desc;
 		detectionSIFT(dog.getImage(), desc);
 		descriptors.push_back(desc);
-		getBiggerArea(desc.rows, desc.cols, biggerArea);
 	}
 	
 	//negative images - cats
 	for (int i = 0; i < 10; i++) {
-		Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg");
+		//Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg");
+		Image cat = Image("train/cat." + to_string(i) + ".jpg");
 		Mat desc;
 		detectionSIFT(cat.getImage(), desc);
 		descriptors.push_back(desc);
-		getBiggerArea(desc.rows, desc.cols, biggerArea);
 	}
 
-	Training train(20, biggerArea);
+	Training train(20, 196);
 	train.initLabels();
 	for (int i = 0; i < descriptors.size(); i++) {
 		train.supportVectorMachine(descriptors[i]);
