@@ -35,6 +35,26 @@ void getBiggerArea(int line, int cols, int &biggerArea) {
 }
 
 int main(){
+	int option = 0;
+	do {
+		cout << "########################################" << endl;
+		cout << "###### BEST TRAINING MACHINE EVER ######" << endl;
+		cout << "########################################" << endl;
+		cout << "1. Support Vector Machine" << endl;
+		cout << "2. K Nearest Neighbours" << endl;
+		cout << "3. Exit" << endl;
+		cin >> option;
+
+		switch (option) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			return 0;
+		}
+	} while (option == 0);
+
 	//identify dogs
 	vector<Mat> train_descriptors;
 	vector<Mat> test_descriptors;
@@ -71,8 +91,10 @@ int main(){
 	for (int i = 0; i < train_descriptors.size(); i++) {
 		train.setTrainingDataMat(train_descriptors[i]);
 	}
-	train.svmTrain();
-	train.svmSave();
+	//train.svmTrain();
+	train.knnTrain();
+	//train.svmSave();
+	train.knnSave();
 	imageCounter=0;
 	float res;
 	for (int i = 1; i < numFileTest; i++) {
@@ -80,7 +102,8 @@ int main(){
 		//Image cat = Image("test1/" + to_string(i) + ".jpg");
 		Mat desc;
 		detectionSIFT(catOrDog.getImage(), desc);
-		res = train.svmTest(desc);
+		//res = train.svmTest(desc);
+		res = train.knnTest(desc);
 		myfile << i << "," << res << endl;
 		printf("%d /12500 \n", imageCounter);
 		imageCounter++;

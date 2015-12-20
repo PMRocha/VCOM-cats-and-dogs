@@ -71,3 +71,33 @@ void Training::svmSave(string fileName) {
 void Training::svmLoad(string fileName) {
 	svm = StatModel::load<SVM>(fileName);
 }
+
+void Training::knnTrain() {
+	knn = KNearest::create();
+	knn->setDefaultK(5);
+	knn->setIsClassifier(true);
+	knn->train(trainingDataMat, ROW_SAMPLE, labels);
+}
+
+float Training::knnTest(Mat desc) {
+	Mat descInLine = Mat(1, 196, CV_32FC1);
+	int ii = 0;
+	for (int i = 0; i < 14; i++) {
+		for (int j = 0; j < 14; j++) {
+			descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+			ii++;
+		}
+	}
+
+	Mat res(0, 0, CV_32F);
+	knn->findNearest(descInLine, knn->getDefaultK(), res);
+	return res.at<float>(0,0);
+}
+
+void Training::knnSave(string fileName) {
+	knn->save(fileName);
+}
+
+void Training::knnLoad(string fileName) {
+	knn = StatModel::load<KNearest>(fileName);
+}

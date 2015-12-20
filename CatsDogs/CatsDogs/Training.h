@@ -19,6 +19,7 @@ private:
 	Mat labels;
 	int filesNum, line;
 	Ptr<SVM> svm;
+	Ptr<KNearest> knn;
 public:
 	Training(int filesNum, double area);
 	~Training();
@@ -30,5 +31,11 @@ public:
 	float svmTest(Mat desc);
 	void svmSave(string fileName = "svm_train.yml");
 	void svmLoad(string fileName = "svm_train.yml");
+
+	//K NEAREST NEIGHBOURS
+	void knnTrain();
+	float knnTest(Mat desc);
+	void knnSave(string fileName = "knn_train.yml");
+	void knnLoad(string fileName = "knn_train.yml");
 };
 
