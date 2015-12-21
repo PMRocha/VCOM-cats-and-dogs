@@ -9,8 +9,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 20
-#define numFileTest 20
+#define numFileTrain 12500
+#define numFileTest 12501
 
 using namespace cv;
 

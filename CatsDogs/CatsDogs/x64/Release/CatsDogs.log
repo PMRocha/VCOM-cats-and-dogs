@@ -1,21 +1,9 @@
-﻿Build started 20/12/2015 19:51:44.
-     1>Project "C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\CatsDogs\CatsDogs.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /IC:\opencv\build\install\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"x64\Release\CatsDogs.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt CatsDogs.cpp
-         CatsDogs.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\x64\Release\CatsDogs.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\opencv\build\install\x64\vc14\lib opencv_ts300.lib opencv_calib3d300.lib opencv_core300.lib opencv_face300.lib opencv_features2d300.lib opencv_flann300.lib opencv_hal300.lib opencv_highgui300.lib opencv_imgcodecs300.lib opencv_imgproc300.lib opencv_ml300.lib opencv_objdetect300.lib opencv_photo300.lib opencv_shape300.lib opencv_stitching300.lib opencv_superres300.lib opencv_video300.lib opencv_videoio300.lib opencv_videostab300.lib opencv_xfeatures2d300.lib opencv_bgsegm300.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\x64\Release\CatsDogs.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\x64\Release\CatsDogs.lib" /MACHINE:X64 x64\Release\CatsDogs.obj
-         x64\Release\Image.obj
-         x64\Release\stdafx.obj
-         x64\Release\Training.obj
-         Generating code
-         42 of 384 functions (10.9%) were compiled, the rest were copied from previous compilation.
-           1 functions were new in current compilation
-           6 functions had inline decision re-evaluated but remain unchanged
-         Finished generating code
-         CatsDogs.vcxproj -> C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\x64\Release\CatsDogs.exe
-     1>Done Building Project "C:\Users\João\Desktop\Feup\5º ano\1º Semestre\Visão por Computador\VCOM_proj2\VCOM-cats-and-dogs\CatsDogs\CatsDogs\CatsDogs.vcxproj" (Build target(s)).
+﻿Build started 20/12/2015 22:51:34.
+     1>Project "C:\Users\Pedrp\Documents\GitHub\VCOM-cats-and-dogs\CatsDogs\CatsDogs\CatsDogs.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         CatsDogs.vcxproj -> C:\Users\Pedrp\Documents\GitHub\VCOM-cats-and-dogs\CatsDogs\x64\Release\CatsDogs.exe
+     1>Done Building Project "C:\Users\Pedrp\Documents\GitHub\VCOM-cats-and-dogs\CatsDogs\CatsDogs\CatsDogs.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.93
+Time Elapsed 00:00:00.22
