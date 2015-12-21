@@ -9,15 +9,22 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 20
-#define numFileTest 40
+#define numFileTrain 100
+#define numFileTest 200
+#define dictionarySize 196
 
 using namespace cv;
 
-vector<Mat> train_descriptors;
+Mat train_descriptors;
+TermCriteria tc(CV_TERMCRIT_ITER, 100, 0.001);
+int retries = 1;
+int flags = KMEANS_PP_CENTERS;
+Mat dictionary;
+
 vector<Mat> test_descriptors;
-Training train = Training(2 * numFileTrain, 196);
-int imageCounter = 0;
+vector<Mat> bow_descriptors;
+Training train = Training(2 * numFileTrain, dictionarySize);
+int imageCounter = 1;
 
 void detectionSIFT(Mat img, Mat &desc) {
 	vector<vector<KeyPoint>>keypoints = vector<vector<KeyPoint>>();
@@ -28,41 +35,100 @@ void detectionSIFT(Mat img, Mat &desc) {
 	detector->detect(img, img_keypoints);
 
 	//calculate descriptors (feature vectors)
-	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(196);
+	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(/*196*/);
 	extractor->compute(img, img_keypoints, desc);
 }
 
-void getFeatures(vector<Mat> &descriptors) {
+void getFeatures() {
 	//verificar se o vocabulario existe (ficheiro)
 	//positive images - dogs
 	for (int i = 0; i < numFileTrain; i++) {
-		Image dog = Image("../x64/Release/train/dog." + to_string(i) + ".jpg");
-		//Image dog = Image("train/dog." + to_string(i) + ".jpg");
+		Image dog = Image("../x64/Release/train/dog." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		//Image dog = Image("train/dog." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
 		Mat desc;
 		detectionSIFT(dog.getImage(), desc);
-		descriptors.push_back(desc);
-		printf("%d /25000 \n", imageCounter);
+		train_descriptors.push_back(desc);
+		printf("%d/%d \n", imageCounter, numFileTrain*2);
 		imageCounter++;
 	}
 
 	//negative images - cats
 	for (int i = 0; i < numFileTrain; i++) {
-		Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg");
-		//Image cat = Image("train/cat." + to_string(i) + ".jpg");
+		Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		//Image cat = Image("train/cat." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
 		Mat desc;
 		detectionSIFT(cat.getImage(), desc);
-		descriptors.push_back(desc);
-		printf("%d /25000 \n", imageCounter);
+		train_descriptors.push_back(desc);
+		printf("%d/%d \n", imageCounter, numFileTrain*2);
 		imageCounter++;
 	}
+}
+
+void getBoFdescriptor() {
+	Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
+	Ptr<FeatureDetector> detector = xfeatures2d::SIFT::create();
+	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create();
+	BOWImgDescriptorExtractor bowDE(extractor, matcher);
+
+	bowDE.setVocabulary(dictionary);
+
+	imageCounter = 1;
+	for (int i = 0; i < numFileTrain; i++) {
+		Image dog = Image("../x64/Release/train/dog." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		//Image dog = Image("train/dog." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		vector<KeyPoint> keypoints;
+		detector->detect(dog.getImage(), keypoints);
+		Mat bowDescriptor;
+		bowDE.compute(dog.getImage(), keypoints, bowDescriptor); 
+		train.setTrainingDataMat(bowDescriptor);
+		printf("%d/%d \n", imageCounter, numFileTrain*2);
+		imageCounter++;
+	}
+
+	//negative images - cats
+	for (int i = 0; i < numFileTrain; i++) {
+		Image cat = Image("../x64/Release/train/cat." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		//Image cat = Image("train/cat." + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		vector<KeyPoint> keypoints;
+		detector->detect(cat.getImage(), keypoints);
+		Mat bowDescriptor;
+		bowDE.compute(cat.getImage(), keypoints, bowDescriptor);
+		train.setTrainingDataMat(bowDescriptor);
+		printf("%d/%d \n", imageCounter, numFileTrain*2);
+		imageCounter++;
+	}
+}
+
+void constructBagOfWords() {
+	FileStorage fs("dictionary.yml", FileStorage::READ);
+	if (!fs.isOpened())
+	{
+		cout << "1st SIFT" << endl;
+		getFeatures();
+		cout << "BOW creation" << endl;
+		//Create the BoW (or BoF) trainer
+		BOWKMeansTrainer bowTrainer(dictionarySize, tc, retries, flags);
+		//cluster the feature vectors
+		dictionary = bowTrainer.cluster(train_descriptors);
+		//store the vocabulary
+		FileStorage fs("dictionary.yml", FileStorage::WRITE);
+		fs << "vocabulary" << dictionary;
+		fs.release();
+	} else {
+		cout << "loading file" << endl;
+		fs["vocabulary"] >> dictionary;
+		fs.release();
+	}
+	cout << "2nd SIFT" << endl;
+	getBoFdescriptor();
 }
 
 void startTraining(int option) {
 	//initialize training
 	train.initLabels();
-	for (int i = 0; i < train_descriptors.size(); i++) {
-		train.setTrainingDataMat(train_descriptors[i]);
-	}
+	/*for (int i = 0; i < bow_descriptors.size(); i++) {
+		train.setTrainingDataMat(bow_descriptors[i]);
+	}*/
 	//choosing train algorithm
 	switch (option) {
 		case 1:
@@ -79,15 +145,16 @@ void startTraining(int option) {
 }
 
 void testing(int option) {
+	printf("Testing \n");
 	ofstream myfile;
 	myfile.open("results.csv", ios::trunc);
 	myfile << "id,label\n";
 
-	imageCounter = 0;
+	imageCounter = 1;
 	float res;
 	for (int i = 1; i < numFileTest; i++) {
-		Image catOrDog = Image("../x64/Release/test1/" + to_string(i) + ".jpg");
-		//Image cat = Image("test1/" + to_string(i) + ".jpg");
+		Image catOrDog = Image("../x64/Release/test1/" + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		//Image cat = Image("test1/" + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
 		Mat desc;
 		detectionSIFT(catOrDog.getImage(), desc);
 		switch (option) {
@@ -99,10 +166,8 @@ void testing(int option) {
 			break;
 		}
 		myfile << i << "," << res << endl;
-		printf("%d /12500 \n", imageCounter);
+		printf("%d/%d \n", imageCounter, numFileTest);
 		imageCounter++;
-		//imshow("catOrDog", catOrDog.getImage());
-		//waitKey(0);
 	}
 	myfile.close();
 }
@@ -120,7 +185,7 @@ void menu_trainOrLoad(int &opt, bool &load) {
 
 	switch (option) {
 	case 1:
-		getFeatures(train_descriptors);
+		constructBagOfWords();
 		startTraining(opt);
 		break;
 	case 2:

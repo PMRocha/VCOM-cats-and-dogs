@@ -17,11 +17,11 @@ class Training
 private:
 	Mat trainingDataMat;
 	Mat labels;
-	int filesNum, line;
+	int filesNum, line, dictionarySize;
 	Ptr<SVM> svm;
 	Ptr<KNearest> knn;
 public:
-	Training(int filesNum, double area);
+	Training(int filesNum, double dictionarySize);
 	~Training();
 	void initLabels();
 

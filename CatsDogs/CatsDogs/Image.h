@@ -18,6 +18,7 @@ private:
 	Mat image;
 public:
 	Image(string imageDir);
+	Image(string imageDir, int type);
 	Image();
 	~Image();
 

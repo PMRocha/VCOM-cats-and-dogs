@@ -4,10 +4,11 @@
 #include <opencv2/xfeatures2d.hpp>
 
 
-Training::Training(int filesNum, double area){
+Training::Training(int filesNum, double dictionarySize){
 	this->filesNum = filesNum;
+	this->dictionarySize = dictionarySize;
 	this->line = 0;
-	trainingDataMat = Mat(filesNum, area, CV_32FC1);
+	trainingDataMat = Mat(0, dictionarySize, CV_32FC1);
 
 	labels = Mat(filesNum, 0, CV_32SC1);
 }
@@ -27,14 +28,16 @@ void Training::initLabels() {
 }
 
 void Training::setTrainingDataMat(Mat catDog) {
-	int ii = 0;
-	for (int i = 0; i</*catDog.rows*/14; i++) {
-		for (int j = 0; j < /*catDog.cols*/14; j++) {
+	/*int ii = 0;
+	for (int i = 0; i<14; i++) {
+		for (int j = 0; j < 14; j++) {
 			trainingDataMat.at<float>(line, ii) = catDog.at<uchar>(i, j);
 			ii++;
 		}
 	}
-	line++;
+	line++;*/
+
+	trainingDataMat.push_back(catDog);
 }
 
 void Training::svmTrain() {
@@ -52,7 +55,7 @@ void Training::svmTrain() {
 float Training::svmTest(Mat desc) {
 
 	//just testing
-	Mat descInLine = Mat(1, 196, CV_32FC1);
+	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
 	int ii = 0;
 	for (int i = 0; i < 14; i++) {
 		for (int j = 0; j < 14; j++) {
@@ -60,6 +63,8 @@ float Training::svmTest(Mat desc) {
 			ii++;
 		}
 	}
+	//descInLine.push_back(desc);
+	//Mat descInLine = desc.reshape(0, 1);
 
 	return svm->predict(descInLine);
 }
@@ -80,7 +85,7 @@ void Training::knnTrain() {
 }
 
 float Training::knnTest(Mat desc) {
-	Mat descInLine = Mat(1, 196, CV_32FC1);
+	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
 	int ii = 0;
 	for (int i = 0; i < 14; i++) {
 		for (int j = 0; j < 14; j++) {
