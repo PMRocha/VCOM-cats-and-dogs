@@ -9,13 +9,14 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 12500
-#define numFileTest 12501
+#define numFileTrain 20
+#define numFileTest 40
 
 using namespace cv;
 
 vector<Mat> train_descriptors;
 vector<Mat> test_descriptors;
+Training train = Training(2 * numFileTrain, 196);
 int imageCounter = 0;
 
 void detectionSIFT(Mat img, Mat &desc) {
@@ -58,7 +59,6 @@ void getFeatures(vector<Mat> &descriptors) {
 
 void startTraining(int option) {
 	//initialize training
-	Training train(2 * numFileTrain, 196);
 	train.initLabels();
 	for (int i = 0; i < train_descriptors.size(); i++) {
 		train.setTrainingDataMat(train_descriptors[i]);
@@ -76,9 +76,11 @@ void startTraining(int option) {
 		case 3:
 			break;
 	}
+}
 
+void testing(int option) {
 	ofstream myfile;
-	myfile.open("results.csv", ios::app);
+	myfile.open("results.csv", ios::trunc);
 	myfile << "id,label\n";
 
 	imageCounter = 0;
@@ -105,35 +107,39 @@ void startTraining(int option) {
 	myfile.close();
 }
 
-void menu_trainOrLoad(int &opt, bool &train) {
+void menu_trainOrLoad(int &opt, bool &load) {
 	//false = train   true = load
 	int option = 0;
-	do {
-		cout << "########################################" << endl;
-		cout << "###### BEST TRAINING MACHINE EVER ######" << endl;
-		cout << "########################################" << endl;
-		cout << "1. Train" << endl;
-		cout << "2. Load from YML" << endl;
-		cout << "3. Back" << endl;
-		cin >> option;
+	cout << "########################################" << endl;
+	cout << "###### BEST TRAINING MACHINE EVER ######" << endl;
+	cout << "########################################" << endl;
+	cout << "1. Train" << endl;
+	cout << "2. Load from YML" << endl;
+	cout << "3. Back" << endl;
+	cin >> option;
 
-		switch (option) {
-		case 1:
-			getFeatures(train_descriptors);
-			startTraining(opt);
-			break;
-		case 2:
-			break;
-		case 3:
-			opt = 0;
-			return;
+	switch (option) {
+	case 1:
+		getFeatures(train_descriptors);
+		startTraining(opt);
+		break;
+	case 2:
+		if (opt == 1) {//svm
+			train.svmLoad();
+		} else if (opt == 2) {//knn
+			train.knnLoad();
 		}
-	} while (option == 0);
+		break;
+	case 3:
+		opt = 0;
+		return;
+	}
+	testing(opt);
 }
 
 void menu() {
 	int option = 0;
-	bool train = true;
+	bool load = false;
 	do {
 		cout << "########################################" << endl;
 		cout << "###### BEST TRAINING MACHINE EVER ######" << endl;
@@ -145,10 +151,10 @@ void menu() {
 
 		switch (option) {
 		case 1:
-			menu_trainOrLoad(option, train);
+			menu_trainOrLoad(option, load);
 			break;
 		case 2:
-			menu_trainOrLoad(option, train);
+			menu_trainOrLoad(option, load);
 			break;
 		case 3:
 			exit(0);
