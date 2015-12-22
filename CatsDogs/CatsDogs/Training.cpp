@@ -108,3 +108,32 @@ void Training::knnSave(string fileName) {
 void Training::knnLoad(string fileName) {
 	knn = StatModel::load<KNearest>(fileName);
 }
+
+
+void Training::bayesTrain() {
+	bayes = NormalBayesClassifier::create();
+	bayes->train(trainingDataMat, ROW_SAMPLE, labels);
+}
+
+float Training::bayesTest(Mat desc) {
+	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
+	int ii = 0;
+	for (int i = 0; i < desc.rows; i++) {
+		for (int j = 0; j < desc.cols; j++) {
+			if (ii <= dictionarySize) {
+				descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+				ii++;
+			}
+		}
+	}
+
+	return bayes->predict(descInLine);
+}
+
+void Training::bayesSave(string fileName) {
+	bayes->save(fileName);
+}
+
+void Training::bayesLoad(string fileName) {
+	bayes = StatModel::load<NormalBayesClassifier>(fileName);
+}

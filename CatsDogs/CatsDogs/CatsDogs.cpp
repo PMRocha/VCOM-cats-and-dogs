@@ -140,6 +140,8 @@ void startTraining(int option) {
 			train.knnSave();
 			break;
 		case 3:
+			train.bayesTrain();
+			train.bayesSave();
 			break;
 	}
 }
@@ -163,6 +165,9 @@ void testing(int option) {
 			break;
 		case 2:
 			res = train.knnTest(desc);
+			break;
+		case 3:
+			res = train.bayesTest(desc);
 			break;
 		}
 		myfile << i << "," << res << endl;
@@ -193,6 +198,8 @@ void menu_trainOrLoad(int &opt, bool &load) {
 			train.svmLoad();
 		} else if (opt == 2) {//knn
 			train.knnLoad();
+		} else if (opt == 3) {//bayes
+			train.bayesLoad();
 		}
 		break;
 	case 3:
@@ -211,18 +218,16 @@ void menu() {
 		cout << "########################################" << endl;
 		cout << "1. Support Vector Machine" << endl;
 		cout << "2. K Nearest Neighbours" << endl;
-		cout << "3. Exit" << endl;
+		cout << "3. Bayes Classifier" << endl;
+		cout << "4. Exit" << endl;
 		cin >> option;
 
-		switch (option) {
-		case 1:
-			menu_trainOrLoad(option, load);
-			break;
-		case 2:
-			menu_trainOrLoad(option, load);
-			break;
-		case 3:
+		if (option == 4) {
 			exit(0);
+		} else if (option < 4) {
+			menu_trainOrLoad(option, load);
+		}else {
+			option = 0;
 		}
 	} while (option == 0);
 }

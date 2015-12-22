@@ -20,13 +20,14 @@ private:
 	int filesNum, line, dictionarySize;
 	Ptr<SVM> svm;
 	Ptr<KNearest> knn;
+	Ptr<NormalBayesClassifier> bayes;
 public:
 	Training(int filesNum, double dictionarySize);
 	~Training();
 	void initLabels();
+	void setTrainingDataMat(Mat catDog);
 
 	//SUPPORT VECTOR MACHINE
-	void setTrainingDataMat(Mat catDog);
 	void svmTrain();
 	float svmTest(Mat desc);
 	void svmSave(string fileName = "svm_train.yml");
@@ -37,5 +38,11 @@ public:
 	float knnTest(Mat desc);
 	void knnSave(string fileName = "knn_train.yml");
 	void knnLoad(string fileName = "knn_train.yml");
+
+	//BAYES
+	void bayesTrain();
+	float bayesTest(Mat desc);
+	void bayesSave(string fileName = "bayes_train.yml");
+	void bayesLoad(string fileName = "bayes_train.yml");
 };
 
