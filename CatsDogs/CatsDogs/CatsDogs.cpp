@@ -9,8 +9,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 10
-#define numFileTest 20
+#define numFileTrain 100
+#define numFileTest 12501
 #define dictionarySize 196
 
 using namespace cv;

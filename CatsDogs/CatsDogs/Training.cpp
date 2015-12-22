@@ -43,13 +43,15 @@ void Training::setTrainingDataMat(Mat catDog) {
 void Training::svmTrain() {
 	svm = SVM::create();
 	svm->setType(SVM::C_SVC);
-	svm->setKernel(SVM::POLY);
-	svm->setDegree(3);
+	svm->setKernel(SVM::LINEAR);
+	//svm->setDegree(3);
 	TermCriteria term_crit(CV_TERMCRIT_ITER, 100, 1e-6);
 	svm->setTermCriteria(term_crit);
 
 	// Train the SVM
-	svm->train(trainingDataMat, ROW_SAMPLE, labels);
+	//svm->train(trainingDataMat, ROW_SAMPLE, labels);
+	Ptr<TrainData> trainData = TrainData::create(trainingDataMat, ROW_SAMPLE, labels);
+	svm->trainAuto(trainData);
 }
 
 float Training::svmTest(Mat desc) {
@@ -65,7 +67,6 @@ float Training::svmTest(Mat desc) {
 			}
 		}
 	}
-
 	return svm->predict(descInLine);
 }
 
@@ -79,7 +80,7 @@ void Training::svmLoad(string fileName) {
 
 void Training::knnTrain() {
 	knn = KNearest::create();
-	knn->setDefaultK(5);
+	knn->setDefaultK(50);
 	knn->setIsClassifier(true);
 	knn->train(trainingDataMat, ROW_SAMPLE, labels);
 }
