@@ -57,14 +57,14 @@ float Training::svmTest(Mat desc) {
 	//just testing
 	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
 	int ii = 0;
-	for (int i = 0; i < 14; i++) {
-		for (int j = 0; j < 14; j++) {
-			descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
-			ii++;
+	for (int i = 0; i < desc.rows; i++) {
+		for (int j = 0; j < desc.cols; j++) {
+			if (ii <= dictionarySize) {
+				descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+				ii++;
+			}
 		}
 	}
-	//descInLine.push_back(desc);
-	//Mat descInLine = desc.reshape(0, 1);
 
 	return svm->predict(descInLine);
 }
@@ -87,10 +87,12 @@ void Training::knnTrain() {
 float Training::knnTest(Mat desc) {
 	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
 	int ii = 0;
-	for (int i = 0; i < 14; i++) {
-		for (int j = 0; j < 14; j++) {
-			descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
-			ii++;
+	for (int i = 0; i < desc.rows; i++) {
+		for (int j = 0; j < desc.cols; j++) {
+			if (ii <= dictionarySize) {
+				descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+				ii++;
+			}
 		}
 	}
 

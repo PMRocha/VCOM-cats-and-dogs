@@ -9,8 +9,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 100
-#define numFileTest 200
+#define numFileTrain 10
+#define numFileTest 20
 #define dictionarySize 196
 
 using namespace cv;
@@ -35,7 +35,7 @@ void detectionSIFT(Mat img, Mat &desc) {
 	detector->detect(img, img_keypoints);
 
 	//calculate descriptors (feature vectors)
-	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(/*196*/);
+	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(/*196*/dictionarySize);
 	extractor->compute(img, img_keypoints, desc);
 }
 
