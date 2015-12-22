@@ -9,8 +9,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 100
-#define numFileTest 12501
+#define numFileTrain 10
+#define numFileTest 20
 #define dictionarySize 196
 
 using namespace cv;
@@ -177,6 +177,38 @@ void testing(int option) {
 	myfile.close();
 }
 
+void testingVotes() {
+	try {
+		train.svmLoad();
+		train.knnLoad();
+		train.bayesLoad();
+	
+		printf("Testing Votes Approach \n");
+		ofstream myfile;
+		myfile.open("results_votes.csv", ios::trunc);
+		myfile << "id,label\n";
+
+		imageCounter = 1;
+		float res;
+		for (int i = 1; i < numFileTest; i++) {
+			Image catOrDog = Image("../x64/Release/test1/" + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+			//Image cat = Image("test1/" + to_string(i) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+			Mat desc;
+			detectionSIFT(catOrDog.getImage(), desc);
+
+			res = (train.svmTest(desc) + train.knnTest(desc) + train.bayesTest(desc)) >= 2 ? 1 : 0;
+
+			myfile << i << "," << res << endl;
+			printf("%d/%d \n", imageCounter, numFileTest);
+			imageCounter++;
+		}
+		myfile.close();
+
+	} catch (exception& e) {
+		cout << "Files not found" << endl;
+	}
+}
+
 void menu_trainOrLoad(int &opt, bool &load) {
 	//false = train   true = load
 	int option = 0;
@@ -219,12 +251,15 @@ void menu() {
 		cout << "1. Support Vector Machine" << endl;
 		cout << "2. K Nearest Neighbours" << endl;
 		cout << "3. Bayes Classifier" << endl;
-		cout << "4. Exit" << endl;
+		cout << "4. Votes Approach" << endl;
+		cout << "5. Exit" << endl;
 		cin >> option;
 
 		if (option == 4) {
+			testingVotes();
+		} else if (option == 5) {
 			exit(0);
-		} else if (option < 4) {
+		} else if (option < 5) {
 			menu_trainOrLoad(option, load);
 		}else {
 			option = 0;

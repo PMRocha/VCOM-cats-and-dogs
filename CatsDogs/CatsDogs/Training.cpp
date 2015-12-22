@@ -80,7 +80,7 @@ void Training::svmLoad(string fileName) {
 
 void Training::knnTrain() {
 	knn = KNearest::create();
-	knn->setDefaultK(50);
+	knn->setDefaultK(5);
 	knn->setIsClassifier(true);
 	knn->train(trainingDataMat, ROW_SAMPLE, labels);
 }
