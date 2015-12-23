@@ -18,9 +18,11 @@ private:
 	Mat trainingDataMat;
 	Mat labels;
 	int filesNum, line, dictionarySize;
+	TermCriteria term_crit;
 	Ptr<SVM> svm;
 	Ptr<KNearest> knn;
 	Ptr<NormalBayesClassifier> bayes;
+	Ptr<RTrees> rtrees;
 public:
 	Training(int filesNum, double dictionarySize);
 	~Training();
@@ -44,5 +46,11 @@ public:
 	float bayesTest(Mat desc);
 	void bayesSave(string fileName = "bayes_train.yml");
 	void bayesLoad(string fileName = "bayes_train.yml");
+
+	//RANDOM TREES
+	void rtreesTrain();
+	float rtreesTest(Mat desc);
+	void rtreesSave(string fileName = "rtrees_train.yml");
+	void rtreesLoad(string fileName = "rtrees_train.yml");
 };
 

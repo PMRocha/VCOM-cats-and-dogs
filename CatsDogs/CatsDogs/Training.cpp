@@ -9,8 +9,8 @@ Training::Training(int filesNum, double dictionarySize){
 	this->dictionarySize = dictionarySize;
 	this->line = 0;
 	trainingDataMat = Mat(0, dictionarySize, CV_32FC1);
-
-	labels = Mat(filesNum, 0, CV_32SC1);
+	term_crit = TermCriteria(CV_TERMCRIT_ITER, 1000, 1e-6);
+	labels = Mat(0, 0, CV_32SC1);
 }
 
 Training::~Training()
@@ -44,8 +44,7 @@ void Training::svmTrain() {
 	svm = SVM::create();
 	svm->setType(SVM::C_SVC);
 	svm->setKernel(SVM::LINEAR);
-	//svm->setDegree(3);
-	TermCriteria term_crit(CV_TERMCRIT_ITER, 100, 1e-6);
+	//svm->setDegree(10);
 	svm->setTermCriteria(term_crit);
 
 	// Train the SVM
@@ -137,4 +136,38 @@ void Training::bayesSave(string fileName) {
 
 void Training::bayesLoad(string fileName) {
 	bayes = StatModel::load<NormalBayesClassifier>(fileName);
+}
+
+
+void Training::rtreesTrain() {
+
+	rtrees = RTrees::create();
+	//rtrees->setMinSampleCount(250);
+	//rtrees->setMaxDepth(100);
+	//term_crit = TermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
+	//rtrees->setTermCriteria(term_crit);
+	rtrees->train(trainingDataMat, ROW_SAMPLE, labels);
+}
+
+float Training::rtreesTest(Mat desc) {
+	Mat descInLine = Mat(1, dictionarySize, CV_32FC1);
+	int ii = 0;
+	for (int i = 0; i < desc.rows; i++) {
+		for (int j = 0; j < desc.cols; j++) {
+			if (ii <= dictionarySize) {
+				descInLine.at<float>(0, ii) = desc.at<uchar>(i, j);
+				ii++;
+			}
+		}
+	}
+
+	return rtrees->predict(descInLine);
+}
+
+void Training::rtreesSave(string fileName) {
+	rtrees->save(fileName);
+}
+
+void Training::rtreesLoad(string fileName) {
+	rtrees = StatModel::load<RTrees>(fileName);
 }

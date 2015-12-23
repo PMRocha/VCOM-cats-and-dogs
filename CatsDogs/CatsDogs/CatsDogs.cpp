@@ -9,9 +9,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#define numFileTrain 10
-#define numFileTest 20
-#define dictionarySize 196
+#define numFileTrain 100
+#define numFileTest 51
+#define dictionarySize 300
 
 using namespace cv;
 
@@ -35,7 +35,7 @@ void detectionSIFT(Mat img, Mat &desc) {
 	detector->detect(img, img_keypoints);
 
 	//calculate descriptors (feature vectors)
-	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create(/*196*/dictionarySize);
+	Ptr<DescriptorExtractor> extractor = xfeatures2d::SIFT::create();
 	extractor->compute(img, img_keypoints, desc);
 }
 
@@ -143,6 +143,10 @@ void startTraining(int option) {
 			train.bayesTrain();
 			train.bayesSave();
 			break;
+		case 4:
+			train.rtreesTrain();
+			train.rtreesSave();
+			break;
 	}
 }
 
@@ -168,6 +172,9 @@ void testing(int option) {
 			break;
 		case 3:
 			res = train.bayesTest(desc);
+			break; 
+		case 4:
+			res = train.rtreesTest(desc);
 			break;
 		}
 		myfile << i << "," << res << endl;
@@ -232,6 +239,8 @@ void menu_trainOrLoad(int &opt, bool &load) {
 			train.knnLoad();
 		} else if (opt == 3) {//bayes
 			train.bayesLoad();
+		} else if (opt == 3) {//rtrees
+			train.rtreesLoad();
 		}
 		break;
 	case 3:
@@ -251,15 +260,16 @@ void menu() {
 		cout << "1. Support Vector Machine" << endl;
 		cout << "2. K Nearest Neighbours" << endl;
 		cout << "3. Bayes Classifier" << endl;
-		cout << "4. Votes Approach" << endl;
-		cout << "5. Exit" << endl;
+		cout << "4. Random Trees" << endl;
+		cout << "5. Votes Approach" << endl;
+		cout << "6. Exit" << endl;
 		cin >> option;
 
-		if (option == 4) {
+		if (option == 5) {
 			testingVotes();
-		} else if (option == 5) {
+		} else if (option == 6) {
 			exit(0);
-		} else if (option < 5) {
+		} else if (option < 6) {
 			menu_trainOrLoad(option, load);
 		}else {
 			option = 0;
